@@ -1,48 +1,26 @@
 import Phaser from 'phaser';
+import {ParallaxBackground} from '../objects/ParallaxBackground.ts';
 
 export class MenuScene extends Phaser.Scene {
+    public bg!: ParallaxBackground;
+
     constructor() {
         super('MenuScene');
     }
 
     create(): void {
-        const { width, height } = this.scale;
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        this.bg = new ParallaxBackground(this, [
+            {texture: 'bg', speedX: 10, depth: -4},
+            {texture: 'bg-cloud-1', speedX: 20, depth: -2},
+            {texture: 'bg-cloud-2', speedX: 10, depth: -1},
+            {texture: 'bg-rock', speedX: 0, depth: -3},
+            {texture: 'bg-front', speedX: 0, depth: -1},
+            {texture: 'bg-glass', speedX: 0, depth: -1},
+        ]);
+    }
 
-        const bgKey = isMobile ? 'bg-mobile' : 'bg-desktop';
+    update(_time: number, delta: number) {
 
-        this.add
-            .image(width / 2, height / 2, bgKey)
-            .setOrigin(0.5)
-            .setDisplaySize(width, height);
-
-        this.add
-            .text(width / 2, height / 2 - 100, 'MY GAME', {
-                fontSize: '48px',
-                color: '#ffffff',
-            })
-            .setOrigin(0.5);
-
-        const playButton = this.add
-            .text(width / 2, height / 2 + 20, '▶ START', {
-                fontSize: '32px',
-                color: '#ffcc00',
-                backgroundColor: '#333',
-                padding: { x: 20, y: 10 },
-            })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true });
-
-        playButton.on('pointerdown', () => {
-            this.scene.start('MainScene');
-        });
-
-        playButton.on('pointerover', () => {
-            playButton.setStyle({ color: '#ffffff' });
-        });
-
-        playButton.on('pointerout', () => {
-            playButton.setStyle({ color: '#ffcc00' });
-        });
+        this.bg.update(_time, delta);
     }
 }
