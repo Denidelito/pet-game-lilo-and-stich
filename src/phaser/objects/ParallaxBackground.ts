@@ -1,82 +1,95 @@
 import Phaser from 'phaser';
 
 export interface ParallaxLayerConfig {
-    texture: string;
-    speedX?: number;
-    speedY?: number;
-    depth?: number;
+  texture: string;
+  speedX?: number;
+  speedY?: number;
+  depth?: number;
 }
 
 interface ParallaxSprite {
-    imageA: Phaser.GameObjects.Image;
-    imageB: Phaser.GameObjects.Image;
-    speedX: number;
-    speedY: number;
+  imageA: Phaser.GameObjects.Image;
+  imageB: Phaser.GameObjects.Image;
+  speedX: number;
+  speedY: number;
 }
 
 export class ParallaxBackground {
-    public scene: Phaser.Scene;
-    private readonly layers: ParallaxSprite[] = [];
+  public readonly scene: Phaser.Scene;
+  private readonly layers: ParallaxSprite[] = [];
 
-    constructor(
-        scene: Phaser.Scene,
-        layerConfigs: ParallaxLayerConfig[]
-    ) {
-        this.scene = scene;
+  constructor(scene: Phaser.Scene, layerConfigs: ParallaxLayerConfig[]) {
+    this.scene = scene;
 
-        const { width, height } = scene.scale;
+    const { height } = scene.scale;
 
-        for (const config of layerConfigs) {
-            const speedX = config.speedX ?? 0;
-            const speedY = config.speedY ?? 0;
+    for (const config of layerConfigs) {
+      const speedX = config.speedX ?? 0;
+      const speedY = config.speedY ?? 0;
 
-            const imageA = scene.add
-                .image(0, 0, config.texture)
-                .setOrigin(0)
-                .setDisplaySize(width, height)
-                .setDepth(config.depth ?? 0);
+      const texture = scene.textures.get(config.texture);
+      const frame = texture.getSourceImage() as HTMLImageElement;
 
-            const imageB = scene.add
-                .image(width, 0, config.texture)
-                .setOrigin(0)
-                .setDisplaySize(width, height)
-                .setDepth(config.depth ?? 0);
+      const aspectRatio = frame.width / frame.height;
+      const targetHeight = height;
+      const targetWidth = targetHeight * aspectRatio;
 
-            this.layers.push({ imageA, imageB, speedX, speedY });
-        }
+      const imageA = scene.add
+        .image(0, 0, config.texture)
+        .setOrigin(0)
+        .setDisplaySize(targetWidth, targetHeight)
+        .setDepth(config.depth ?? 0);
 
-        scene.scale.on('resize', this.onResize, this);
+      const imageB = scene.add
+        .image(targetWidth, 0, config.texture)
+        .setOrigin(0)
+        .setDisplaySize(targetWidth, targetHeight)
+        .setDepth(config.depth ?? 0);
+
+      this.layers.push({ imageA, imageB, speedX, speedY });
     }
 
-    public update(_time: number, delta: number): void {
-        const dt = delta / 1000;
+    scene.scale.on('resize', this.onResize, this);
+  }
 
-        this.layers.forEach(({ imageA, imageB, speedX, speedY }) => {
-            const dx = speedX * dt;
-            const dy = speedY * dt;
+  public update(_time: number, delta: number): void {
+    const dt = delta / 1000;
 
-            imageA.x -= dx;
-            imageB.x -= dx;
-            imageA.y -= dy;
-            imageB.y -= dy;
+    this.layers.forEach(({ imageA, imageB, speedX, speedY }) => {
+      const dx = speedX * dt;
+      const dy = speedY * dt;
 
-            const width = imageA.displayWidth;
-            const height = imageA.displayHeight;
+      imageA.x -= dx;
+      imageB.x -= dx;
+      imageA.y -= dy;
+      imageB.y -= dy;
 
-            if (imageA.x + width <= 0) imageA.x = imageB.x + width;
-            if (imageB.x + width <= 0) imageB.x = imageA.x + width;
+      const width = imageA.displayWidth;
+      const height = imageA.displayHeight;
 
-            if (imageA.y + height <= 0) imageA.y = imageB.y + height;
-            if (imageB.y + height <= 0) imageB.y = imageA.y + height;
-        });
-    }
+      if (imageA.x + width <= 0) imageA.x = imageB.x + width;
+      if (imageB.x + width <= 0) imageB.x = imageA.x + width;
 
-    private onResize(gameSize: Phaser.Structs.Size): void {
-        const { width, height } = gameSize;
+      if (imageA.y + height <= 0) imageA.y = imageB.y + height;
+      if (imageB.y + height <= 0) imageB.y = imageA.y + height;
+    });
+  }
 
-        this.layers.forEach(({ imageA, imageB }) => {
-            imageA.setDisplaySize(width, height).setPosition(0, 0);
-            imageB.setDisplaySize(width, height).setPosition(width, 0);
-        });
-    }
+  private onResize(gameSize: Phaser.Structs.Size): void {
+    const { height } = gameSize;
+
+    this.layers.forEach(({ imageA, imageB }) => {
+      const texture = this.scene.textures.get(imageA.texture.key);
+      const frame = texture.getSourceImage() as HTMLImageElement;
+
+      const aspectRatio = frame.width / frame.height;
+      const targetHeight = height;
+      const targetWidth = targetHeight * aspectRatio;
+
+      imageA.setDisplaySize(targetWidth, targetHeight).setPosition(0, 0);
+      imageB
+        .setDisplaySize(targetWidth, targetHeight)
+        .setPosition(targetWidth, 0);
+    });
+  }
 }
