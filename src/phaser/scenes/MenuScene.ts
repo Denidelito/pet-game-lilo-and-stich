@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import {ParallaxBackground} from '../objects/ParallaxBackground.ts';
-import {SoundToggleButton} from '../ui/SoundToggleButton.ts';
-import {PlayButton} from '../ui/PlayButton.ts';
+import {SoundButtonUI} from '../ui/SoundButtonUI.ts';
+import {PlayButtonUI} from '../ui/PlayButtonUI.ts';
 import {isMobile} from "../utils/device.ts";
 
 export class MenuScene extends Phaser.Scene {
@@ -24,7 +24,7 @@ export class MenuScene extends Phaser.Scene {
             {texture: 'bg-glass', speedX: 0, depth: -1},
         ]);
 
-        new PlayButton(this, {
+        new PlayButtonUI(this, {
             x: width / 2,
             y: mobile ? height * 0.6 : height / 2 + 40,
             texture: 'button-play',
@@ -33,7 +33,7 @@ export class MenuScene extends Phaser.Scene {
             scale: 1.5,
         });
 
-        new SoundToggleButton(this, {
+        new SoundButtonUI(this, {
             x: width - 60,
             y: 60,
             textureOn: 'sound-on',

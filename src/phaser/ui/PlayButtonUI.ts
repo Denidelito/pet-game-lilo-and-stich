@@ -13,7 +13,7 @@ export interface PlayButtonConfig {
     scale?: number;
 }
 
-export class PlayButton {
+export class PlayButtonUI {
     public scene: Phaser.Scene;
     private readonly container: Phaser.GameObjects.Container;
 

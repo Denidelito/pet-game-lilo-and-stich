@@ -40,12 +40,13 @@ export class PreloadScene extends Phaser.Scene {
         this.load.audio('player-move', 'assets/sound/player/move-slide.wav');
 
         //audio
-        this.load.audio('button-click', 'assets/sound/ui/button_click.wav');
+        this.load.audio('button-click', 'assets/sound/ui/button-click.wav');
 
         //UI
         this.load.image('button-play', 'assets/ui/button-play.png');
         this.load.image('sound-on', 'assets/ui/sound-on.png');
         this.load.image('sound-off', 'assets/ui/sound-off.png');
+        this.load.image('player-health', 'assets/player-health.png');
 
         //assets
         this.load.image('player', 'assets/player.png');

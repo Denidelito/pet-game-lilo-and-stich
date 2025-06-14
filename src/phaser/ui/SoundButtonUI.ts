@@ -10,7 +10,7 @@ export interface SoundToggleButtonConfig {
     depth?: number;
 }
 
-export class SoundToggleButton {
+export class SoundButtonUI {
     private readonly scene: Phaser.Scene;
     private readonly button: Phaser.GameObjects.Image;
     private readonly textureOn: string;

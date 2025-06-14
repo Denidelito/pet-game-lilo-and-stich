@@ -7,6 +7,8 @@ export interface PlayerConfig {
     scale?: number;
     depth?: number;
     stepSoundKey?: string;
+    maxHealth?: number;
+    onDeath?: () => void;
 }
 
 export class Player {
@@ -17,9 +19,16 @@ export class Player {
     private currentIndex: number;
     private readonly stepSoundKey?: string;
 
+    private readonly maxHealth: number;
+    private health: number;
+    private readonly onDeath?: () => void;
+
     constructor(scene: Phaser.Scene, config: PlayerConfig) {
         this.scene = scene;
         this.stepSoundKey = config.stepSoundKey;
+        this.maxHealth = config.maxHealth ?? 3;
+        this.health = this.maxHealth;
+        this.onDeath = config.onDeath;
 
         const { width } = scene.scale;
         const mobile = isMobile();
@@ -56,8 +65,8 @@ export class Player {
     }
 
     private playStepSound(): void {
-        if (this.stepSoundKey) {
-            this.scene.sound.play(this.stepSoundKey, { volume: 0.2 });
+        if (this.stepSoundKey && this.scene.sound.get(this.stepSoundKey)) {
+            this.scene.sound.play(this.stepSoundKey, { volume: 0.6 });
         }
     }
 
@@ -102,6 +111,30 @@ export class Player {
             duration: 150,
             ease: 'Power2',
         });
+    }
+
+    public takeDamage(amount: number = 1): void {
+        this.health -= amount;
+        if (this.health <= 0) {
+            this.health = 0;
+            this.onDeath?.();
+        }
+    }
+
+    public heal(amount: number = 1): void {
+        this.health = Math.min(this.health + amount, this.maxHealth);
+    }
+
+    public isDead(): boolean {
+        return this.health <= 0;
+    }
+
+    public getHealth(): number {
+        return this.health;
+    }
+
+    public getMaxHealth(): number {
+        return this.maxHealth;
     }
 
     public destroy(): void {
