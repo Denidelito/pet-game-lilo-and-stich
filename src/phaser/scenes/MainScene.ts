@@ -24,6 +24,7 @@ export class MainScene extends Phaser.Scene {
     this.player = new Player(this, {
       y: this.scale.height - 30,
       texture: 'player',
+      stepSoundKey: 'player-move',
     });
 
     this.input.keyboard?.on('keydown-LEFT', () => this.player.moveLeft());

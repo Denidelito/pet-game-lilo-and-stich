@@ -6,6 +6,7 @@ export interface PlayerConfig {
     texture: string;
     scale?: number;
     depth?: number;
+    stepSoundKey?: string;
 }
 
 export class Player {
@@ -14,9 +15,11 @@ export class Player {
     private readonly columns: number;
     private readonly columnWidth: number;
     private currentIndex: number;
+    private readonly stepSoundKey?: string;
 
     constructor(scene: Phaser.Scene, config: PlayerConfig) {
         this.scene = scene;
+        this.stepSoundKey = config.stepSoundKey;
 
         const { width } = scene.scale;
         const mobile = isMobile();
@@ -38,6 +41,7 @@ export class Player {
         if (this.currentIndex > 0) {
             this.currentIndex--;
             this.spawnDust();
+            this.playStepSound();
             this.updatePosition();
         }
     }
@@ -46,7 +50,14 @@ export class Player {
         if (this.currentIndex < this.columns - 1) {
             this.currentIndex++;
             this.spawnDust();
+            this.playStepSound();
             this.updatePosition();
+        }
+    }
+
+    private playStepSound(): void {
+        if (this.stepSoundKey) {
+            this.scene.sound.play(this.stepSoundKey, { volume: 0.2 });
         }
     }
 

@@ -36,7 +36,10 @@ export class PreloadScene extends Phaser.Scene {
         //Audio
         this.load.audio('jingle', 'assets/audio/jingle.wav');
 
-        //Audio UI
+        //Player
+        this.load.audio('player-move', 'assets/sound/player/move-slide.wav');
+
+        //audio
         this.load.audio('button-click', 'assets/sound/ui/button_click.wav');
 
         //UI
