@@ -26,7 +26,7 @@ export class SoundButtonUI {
             textureOn,
             textureOff,
             initialMuted = false,
-            scale = 1.4,
+            scale = 1,
             depth = 100,
         } = config;
 
@@ -38,7 +38,6 @@ export class SoundButtonUI {
 
         this.button = scene.add
             .image(x, y, initialMuted ? textureOff : textureOn)
-            .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
             .setScale(scale)
             .setDepth(depth);

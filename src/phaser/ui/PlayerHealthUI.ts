@@ -24,7 +24,7 @@ export class PlayerHealthUI {
         this.player = config.player;
         this.labelPrefix = config.labelPrefix ?? 'x';
 
-        const scale = config.scale ?? 1.4;
+        const scale = config.scale ?? 1;
 
         this.icon = scene.add
             .image(config.x, config.y, config.iconTexture)
@@ -33,8 +33,8 @@ export class PlayerHealthUI {
             .setScale(scale);
 
         this.label = scene.add
-            .text(config.x + this.icon.displayWidth - 50 * scale, config.y, '', {
-                fontSize: '32px',
+            .text(config.x + this.icon.displayWidth - 84 * scale, config.y, '', {
+                fontSize: '64px',
                 color: '#E8B976',
                 fontFamily: 'RuneScape ENA',
                 ...config.style,

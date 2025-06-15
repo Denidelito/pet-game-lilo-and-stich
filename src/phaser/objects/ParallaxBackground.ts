@@ -1,10 +1,13 @@
 import Phaser from 'phaser';
+import {isMobile} from "../utils/device.ts";
 
 export interface ParallaxLayerConfig {
   texture: string;
   speedX?: number;
   speedY?: number;
   depth?: number;
+  positionX?: number;
+  positionY?: number;
 }
 
 interface ParallaxSprite {
@@ -33,15 +36,15 @@ export class ParallaxBackground {
       const aspectRatio = frame.width / frame.height;
       const targetHeight = height;
       const targetWidth = targetHeight * aspectRatio;
-
+      const mobile = isMobile();
       const imageA = scene.add
-        .image(0, 0, config.texture)
+        .image(config.positionX ?? 0, config.positionY ?? 0, config.texture)
         .setOrigin(0)
         .setDisplaySize(targetWidth, targetHeight)
         .setDepth(config.depth ?? 0);
 
       const imageB = scene.add
-        .image(targetWidth, 0, config.texture)
+        .image(targetWidth, mobile ? -234 : 0, config.texture)
         .setOrigin(0)
         .setDisplaySize(targetWidth, targetHeight)
         .setDepth(config.depth ?? 0);

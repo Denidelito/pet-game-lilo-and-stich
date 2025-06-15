@@ -19,6 +19,7 @@ export class PlayButtonUI {
 
     constructor(scene: Phaser.Scene, config: PlayButtonConfig) {
         this.scene = scene;
+
         const {
             x,
             y,
@@ -28,7 +29,7 @@ export class PlayButtonUI {
             onClick,
             clickSoundKey,
             depth = 100,
-            scale = 1.4,
+            scale = 1,
         } = config;
 
         const background = scene.add
@@ -39,7 +40,7 @@ export class PlayButtonUI {
 
         const text = scene.add
             .text(0, 0, label, {
-                fontSize: '50px',
+                fontSize: '100px',
                 color: '#ffffff',
                 fontFamily: 'RuneScape ENA',
             })

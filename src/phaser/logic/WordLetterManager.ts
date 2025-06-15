@@ -7,11 +7,13 @@ export class WordLetterManager {
     private readonly scene: Phaser.Scene;
     private readonly targetWord: string;
     private readonly player: Player;
-    private readonly activeLetters: FallingLetter[] = [];
-    private readonly usedLetters: Set<string> = new Set();
-    private readonly alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    public activeLetters: FallingLetter[] = [];
+
     private readonly columns: number;
     private readonly columnWidth: number;
+    private readonly alphabet = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+
+    private currentIndex = 0;
 
     constructor(scene: Phaser.Scene, word: string, player: Player) {
         this.scene = scene;
@@ -27,19 +29,23 @@ export class WordLetterManager {
 
     private launchSpawner(): void {
         this.scene.time.addEvent({
-            delay: 800,
+            delay: 600,
             loop: true,
             callback: () => this.spawnLetter(),
         });
     }
 
     private spawnLetter(): void {
-        const isCorrect = Phaser.Math.Between(0, 1) === 0;
-        const correctPool = this.targetWord.split('').filter(c => !this.usedLetters.has(c));
-        const incorrectPool = this.alphabet.split('').filter(c => !this.targetWord.includes(c));
+        const correctChar = this.targetWord[this.currentIndex];
 
-        const char = isCorrect && correctPool.length > 0
-            ? Phaser.Utils.Array.GetRandom(correctPool)
+        const isCorrect = Phaser.Math.Between(1, 10) === 1;
+
+        const incorrectPool = this.alphabet
+            .split('')
+            .filter(c => c !== correctChar);
+
+        const char = isCorrect
+            ? correctChar
             : Phaser.Utils.Array.GetRandom(incorrectPool);
 
         const colIndex = Phaser.Math.Between(0, this.columns - 1);
@@ -49,18 +55,34 @@ export class WordLetterManager {
         this.activeLetters.push(letter);
     }
 
+    private getPlayerCatchZone(): Phaser.Geom.Rectangle {
+        const sprite = this.player['sprite'] as Phaser.GameObjects.Sprite;
+
+        const catchHeight = sprite.displayHeight * 0.2;
+        const catchY = sprite.y - sprite.displayHeight / 2;
+
+        return new Phaser.Geom.Rectangle(
+            sprite.x - 50,
+            catchY,
+            100,
+            catchHeight
+        );
+    }
+
     public update(): void {
         this.activeLetters.forEach(letter => {
-            const overlap = Phaser.Math.Distance.Between(
-                letter.sprite.x,
-                letter.sprite.y,
-                this.player['sprite'].x,
-                this.player['sprite'].y
-            ) < 40;
+            const overlap = Phaser.Geom.Intersects.RectangleToRectangle(
+                letter.sprite.getBounds(),
+                this.getPlayerCatchZone()
+            );
 
             if (overlap) {
-                if (this.targetWord.includes(letter.char)) {
-                    this.usedLetters.add(letter.char);
+                const expected = this.targetWord[this.currentIndex];
+                const char = letter.char.toUpperCase();
+
+                if (char === expected) {
+                    this.currentIndex++;
+                    this.scene.events.emit('letter-caught', char);
                 } else {
                     this.player.takeDamage(1);
                 }
@@ -69,17 +91,17 @@ export class WordLetterManager {
             }
         });
 
-        this.activeLetters.filter(l => l.sprite.active);
+        this.activeLetters = this.activeLetters.filter(l => l.sprite.active);
     }
 
+
     public isComplete(): boolean {
-        return this.targetWord
-            .split('')
-            .every(char => this.usedLetters.has(char));
+        return this.currentIndex >= this.targetWord.length;
     }
 
     public destroy(): void {
         this.activeLetters.forEach(letter => letter.destroy());
+        this.activeLetters.length = 0;
     }
 }
 
