@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import {ParallaxBackground} from '../objects/ParallaxBackground.ts';
-import {SoundButtonUI} from '../ui/SoundButtonUI.ts';
-import {PlayButtonUI} from '../ui/PlayButtonUI.ts';
-import {isMobile} from "../utils/device.ts";
+import { ParallaxBackground } from '../objects/ParallaxBackground.ts';
+import { SoundButtonUI } from '../ui/SoundButtonUI.ts';
+import { PlayButtonUI } from '../ui/PlayButtonUI.ts';
+import { isMobile } from '../utils/device.ts';
 
 export class MenuScene extends Phaser.Scene {
     public bg!: ParallaxBackground;
@@ -12,16 +12,16 @@ export class MenuScene extends Phaser.Scene {
     }
 
     create(): void {
-        const {width, height} = this.scale;
+        const { width, height } = this.scale;
         const mobile = isMobile();
 
         this.bg = new ParallaxBackground(this, [
-            {texture: 'bg', speedX: mobile ? 5 : 10, depth: -4, positionX: 0, positionY: 0},
-            {texture: 'bg-cloud-1', speedX: mobile ? 10 : 20, depth: -2, positionX: 0, positionY: 0},
-            {texture: 'bg-cloud-2', speedX: mobile ? 5 : 10, depth: -1, positionX: 0, positionY: 0},
-            {texture: 'bg-rock', speedX: 0, depth: -3, positionX: 0, positionY: 0},
-            {texture: 'bg-front', speedX: 0, depth: -1, positionX: 0, positionY: 0},
-            {texture: 'bg-glass', speedX: 0, depth: -1, positionX: 0, positionY: 0},
+            { texture: 'bg', speedX: mobile ? 5 : 10, depth: -4, positionX: 0 },
+            { texture: 'bg-cloud-1', speedX: mobile ? 10 : 20, depth: -2, positionX: 0 },
+            { texture: 'bg-cloud-2', speedX: mobile ? 5 : 10, depth: -1, positionX: 0 },
+            { texture: 'bg-rock', speedX: 0, depth: -3, positionX: 0 },
+            { texture: 'bg-front', speedX: 0, depth: -1, positionX: 0 },
+            { texture: 'bg-glass', speedX: 0, depth: -1, positionX: 0 },
         ]);
 
         new PlayButtonUI(this, {
@@ -30,7 +30,7 @@ export class MenuScene extends Phaser.Scene {
             texture: 'button-play',
             targetScene: 'MainScene',
             clickSoundKey: 'button-click',
-            scale: mobile ? 0.9 : 1
+            scale: mobile ? 0.9 : 1,
         });
 
         new SoundButtonUI(this, {
@@ -39,7 +39,7 @@ export class MenuScene extends Phaser.Scene {
             textureOn: 'sound-on',
             textureOff: 'sound-off',
             initialMuted: false,
-            scale: mobile ? 0.9 : 1
+            scale: mobile ? 0.9 : 1,
         });
     }
 

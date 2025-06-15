@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {transitionToScene} from "../utils/sceneTransition.ts";
+import { transitionToScene } from '../utils/sceneTransition.ts';
 
 export interface PlayButtonConfig {
     x: number;
@@ -51,18 +51,21 @@ export class PlayButtonUI {
         this.container.setSize(background.displayWidth, background.displayHeight);
         this.container.setDepth(depth);
         this.container.setScale(scale);
-        this.container.setInteractive({useHandCursor: true});
+        this.container.setInteractive({ useHandCursor: true });
 
         this.container.on('pointerdown', () => {
             if (clickSoundKey) {
-                scene.sound.play(clickSoundKey);
+                scene.sound.play(clickSoundKey, { volume: 1 });
             }
-
             onClick?.();
             transitionToScene(scene, targetScene);
         });
 
         this.container.on('pointerover', () => {
+            if (clickSoundKey) {
+                scene.sound.play(clickSoundKey, { volume: 0.3 });
+            }
+
             scene.tweens.add({
                 targets: this.container,
                 scale: scale * 1.1,

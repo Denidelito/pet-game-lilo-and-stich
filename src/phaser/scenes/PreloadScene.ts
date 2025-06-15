@@ -33,6 +33,7 @@ export class PreloadScene extends Phaser.Scene {
 
         //Player
         this.load.audio('player-move', 'assets/sound/player/move-slide.wav');
+        this.load.audio('damage', 'assets/sound/player/damage.wav');
 
         //Boss
         this.load.image('experiment-007', 'assets/boss/experiment-007.png');
@@ -47,12 +48,14 @@ export class PreloadScene extends Phaser.Scene {
 
         //UI
         this.load.image('button-play', 'assets/ui/button-play.png');
+        this.load.image('button', 'assets/ui/button.png');
         this.load.image('sound-on', 'assets/ui/sound-on.png');
         this.load.image('sound-off', 'assets/ui/sound-off.png');
         this.load.image('player-health', 'assets/ui/player-health.png');
         this.load.image('boss-bg-ui', 'assets/ui/boss-bg-ui.png');
         this.load.image('boss-health-bar', 'assets/ui/boss-health-bar.png');
         this.load.image('tile', 'assets/ui/tile-bg.png');
+        this.load.image('information-table', 'assets/ui/information-table.png');
 
         //assets
         this.load.image('player', 'assets/player.png');

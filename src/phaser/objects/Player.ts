@@ -65,8 +65,8 @@ export class Player {
     }
 
     private playStepSound(): void {
-        if (this.stepSoundKey && this.scene.sound.get(this.stepSoundKey)) {
-            this.scene.sound.play(this.stepSoundKey, { volume: 0.6 });
+        if (this.stepSoundKey) {
+            this.scene.sound.play(this.stepSoundKey, { volume: 0.2 });
         }
     }
 
@@ -115,11 +115,36 @@ export class Player {
 
     public takeDamage(amount: number = 1): void {
         this.health -= amount;
+
         if (this.health <= 0) {
             this.health = 0;
             this.onDeath?.();
         }
+
+
+        this.scene.sound.play('damage', { volume: 0.4 });
+        this.flashRed();
+        this.jumpOnHit();
     }
+
+    private flashRed(): void {
+        this.sprite.setTint(0xff0000);
+
+        this.scene.time.delayedCall(150, () => {
+            this.sprite.clearTint();
+        });
+    }
+
+    private jumpOnHit(): void {
+        this.scene.tweens.add({
+            targets: this.sprite,
+            y: this.sprite.y - 30,
+            duration: 100,
+            ease: 'Power2',
+            yoyo: true,
+        });
+    }
+
 
     public heal(amount: number = 1): void {
         this.health = Math.min(this.health + amount, this.maxHealth);

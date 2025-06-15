@@ -9,33 +9,44 @@ import { BossHealthBar } from '../ui/BossHealthBar.ts';
 import { setupSwipeControls } from '../utils/swipe.ts';
 import { levels } from '../../data/levels.ts';
 import { LevelWordController } from '../logic/LevelWordController.ts';
+import { LevelIntroText } from '../ui/LevelIntroText.ts';
+import { OnboardingOverlay } from '../ui/OnboardingOverlay.ts';
 
 export class MainScene extends Phaser.Scene {
     private bg!: ParallaxBackground;
     private player!: Player;
     private healthUI!: PlayerHealthUI;
-    public bossHealthBar!: BossHealthBar;
     private collectedUI!: CollectedWordUI;
     private bossUI!: BossRevealUI;
-    private wordController!: LevelWordController;
+    private bossHealthBar!: BossHealthBar;
+    private wordController: LevelWordController | null = null;
+
+    private onboardingDone = false;
+    public levelIndex = 0;
+    public levelTheme = '';
 
     constructor() {
         super('MainScene');
     }
 
-    create() {
+    create(): void {
         const mobile = isMobile();
-        const currentLevel = levels[0];
-        const currentWords = [...currentLevel.wordsToReachBoss, ...currentLevel.wordsToDefeatBoss];
+
+        const currentLevel = levels[this.levelIndex];
+        const currentWords = [
+            ...currentLevel.wordsToReachBoss,
+            ...currentLevel.wordsToDefeatBoss,
+        ];
+        this.levelTheme = currentLevel.theme;
 
         // Фон
         this.bg = new ParallaxBackground(this, [
-            { texture: 'bg', speedX: 0, depth: -4, positionX: 0, positionY: 0 },
-            { texture: 'bg-cloud-1', speedX: 20, depth: -2, positionX: 0, positionY: 0 },
-            { texture: 'bg-cloud-2', speedX: 10, depth: -1, positionX: 0, positionY: 0 },
-            { texture: 'bg-rock', speedX: 0, depth: -3, positionX: mobile ? -300 : 0, positionY: 0 },
-            { texture: 'bg-front', speedX: 0, depth: -1, positionX: mobile ? -300 : 0, positionY: 0 },
-            { texture: 'bg-glass', speedX: 0, depth: 2, positionX: mobile ? -300 : 0, positionY: 0 },
+            { texture: 'bg', speedX: 0, depth: -4, positionX: 0 },
+            { texture: 'bg-cloud-1', speedX: 20, depth: -2, positionX: 0 },
+            { texture: 'bg-cloud-2', speedX: 10, depth: -1, positionX: 0 },
+            { texture: 'bg-rock', speedX: 0, depth: -3, positionX: mobile ? -450 : 0 },
+            { texture: 'bg-front', speedX: 0, depth: -1, positionX: mobile ? -450 : 0 },
+            { texture: 'bg-glass', speedX: 0, depth: 2, positionX: mobile ? -450 : 0 },
         ]);
 
         // Игрок
@@ -54,11 +65,11 @@ export class MainScene extends Phaser.Scene {
             scale: mobile ? 0.5 : 1,
         });
 
-        // UI собранных букв
+        // Собранные буквы
         this.collectedUI = new CollectedWordUI(this, {
             x: mobile ? 12 : this.scale.width / 2,
             y: mobile ? 20 : 28,
-            word: '',
+            word: 'Стич',
             tileTexture: 'tile',
         });
 
@@ -71,25 +82,35 @@ export class MainScene extends Phaser.Scene {
             scale: mobile ? 0.5 : 1,
         });
 
-        this.wordController = new LevelWordController({
-            scene: this,
-            words: currentWords,
-            player: this.player,
-            collectedUI: this.collectedUI,
-            bossUI: this.bossUI,
-            onComplete: () => this.scene.start('WinScene'),
-            bossHealthBar: new BossHealthBar(this, {
-                x: this.scale.width / 2,
-                y: mobile ? this.scale.height - 20  : 140,
-                width: 496,
-                height: 24,
-                max: 100,
-                initial: 100,
-                texture: 'boss-health-bar',
-                scale: mobile ? 0.5 : 1
-            }),
+        // Полоска здоровья босса
+        this.bossHealthBar = new BossHealthBar(this, {
+            x: this.scale.width / 2,
+            y: mobile ? this.scale.height - 20 : 140,
+            width: 496,
+            height: 24,
+            max: 100,
+            initial: 100,
+            texture: 'boss-health-bar',
+            scale: mobile ? 0.5 : 1,
+        });
+        this.bossHealthBar.setVisible(false);
+
+        // Обучение
+        new OnboardingOverlay(this, {
+            steps: [
+                'Смотри на тему уровня, лови буквы и собирай из них слова. Если ты поймаешь букву, которая не подходит для слова, ты лишишься части здоровья.',
+                'После сбора трёх слов ты столкнешься с боссом уровня. Чтобы победить его, нужно снизить его шкалу здоровья до нуля.',
+                'Для перемещения используй клавиши ←/→ или A/D.',
+            ],
+            buttonText: 'Продолжить',
+            scale: mobile ? 0.8 : 1,
+            onComplete: () => {
+                this.onboardingDone = true;
+                this.startLevel(currentWords);
+            },
         });
 
+        // Управление
         if (mobile) {
             setupSwipeControls(
                 this,
@@ -99,16 +120,38 @@ export class MainScene extends Phaser.Scene {
         } else {
             this.input.keyboard?.on('keydown-LEFT', () => this.player.moveLeft());
             this.input.keyboard?.on('keydown-RIGHT', () => this.player.moveRight());
+            this.input.keyboard?.on('keydown-A', () => this.player.moveLeft());
+            this.input.keyboard?.on('keydown-D', () => this.player.moveRight());
         }
 
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-            this.wordController.destroy();
+            this.wordController?.destroy();
         });
     }
 
-    update(time: number, delta: number) {
+    private startLevel(words: string[]): void {
+        this.wordController = new LevelWordController({
+            scene: this,
+            words,
+            player: this.player,
+            collectedUI: this.collectedUI,
+            bossUI: this.bossUI,
+            bossHealthBar: this.bossHealthBar,
+            onComplete: () => this.scene.start('WinScene'),
+        });
+
+        new LevelIntroText(this, {
+            level: this.levelIndex + 1,
+            text: this.levelTheme,
+            duration: 2500,
+        });
+    }
+
+    update(time: number, delta: number): void {
+        if (!this.onboardingDone) return;
+
         this.bg.update(time, delta);
         this.healthUI.update();
-        this.wordController.update();
+        this.wordController?.update();
     }
 }

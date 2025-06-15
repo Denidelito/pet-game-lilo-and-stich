@@ -33,7 +33,7 @@ export class BossHealthBar {
         this.max = config.max;
         this.current = config.initial ?? config.max;
 
-        const bgColor = config.backgroundColor ?? 0x2c6ea4;
+        const bgColor = config.backgroundColor ?? 0xB06935;
         const fillColor = config.fillColor ?? 0xa12f1f;
         const depth = config.depth ?? 50;
 
