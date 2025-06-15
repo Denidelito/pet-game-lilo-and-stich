@@ -35,7 +35,7 @@ export class PlayerHealthUI {
         this.label = scene.add
             .text(config.x + this.icon.displayWidth - 84 * scale, config.y, '', {
                 fontSize: '64px',
-                color: '#E8B976',
+                color: '#ffffff',
                 fontFamily: 'RuneScape ENA',
                 ...config.style,
             })

@@ -43,7 +43,7 @@ export class Player {
             .sprite(x, config.y, config.texture)
             .setOrigin(0.5, 1)
             .setDepth(config.depth ?? 1)
-            .setScale(config.scale ?? 2);
+            .setScale(config.scale ?? 1);
     }
 
     public moveLeft(): void {

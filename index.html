@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Yandex Games SDK -->
+    <script src="/sdk.js"></script>
     <title>Лила и стич</title>
     <style>
       @font-face {
@@ -24,5 +26,13 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      YaGames
+        .init()
+        .then(ysdk => {
+          console.log('Yandex SDK initialized');
+          window.ysdk = ysdk;
+        });
+    </script>
   </body>
 </html>

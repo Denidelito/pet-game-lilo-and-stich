@@ -1,33 +1,45 @@
 export interface LevelData {
-    theme: string;
-    wordsToReachBoss: string[];
-    wordsToDefeatBoss: string[];
-    bossTexture: string;
+  theme: string;
+  wordsToReachBoss: string[];
+  wordsToDefeatBoss: string[];
+  bossTexture: string;
 }
 
 export const levels: LevelData[] = [
-    {
-        theme: 'Пляж',
-        wordsToReachBoss: ['ПЕСОК', 'МОРЕ', 'ЗОНТ'],
-        wordsToDefeatBoss: ['КРЕМ', 'ШАПКА', 'ПЛЯЖ'],
-        bossTexture: 'boss-beach',
-    },
-    {
-        theme: 'Космос',
-        wordsToReachBoss: ['КОРАБЛЬ', 'РАКЕТА', 'ЛУНА'],
-        wordsToDefeatBoss: ['ШЛЕМ', 'КОСТЮМ', 'КОМЕТА'],
-        bossTexture: 'boss-space',
-    },
-    {
-        theme: 'Лес',
-        wordsToReachBoss: ['ДЕРЕВО', 'ШИШКА', 'ГРИБ'],
-        wordsToDefeatBoss: ['МОХ', 'ЯГОДА', 'КУСТ'],
-        bossTexture: 'boss-forest',
-    },
-    {
-        theme: 'Город',
-        wordsToReachBoss: ['МАШИНА', 'ДОМ', 'МОСТ'],
-        wordsToDefeatBoss: ['СВЕТОФОР', 'ПАРК', 'ТРОТУАР'],
-        bossTexture: 'boss-city',
-    },
+  {
+    theme: 'Пляж',
+    wordsToReachBoss: ['песок', 'зонтик', 'шезлонг'],
+    wordsToDefeatBoss: ['крем', 'загар', 'волна'],
+    bossTexture: 'experiment-258',
+  },
+  {
+    theme: 'Еда',
+    wordsToReachBoss: ['пицца', 'салат', 'суп'],
+    wordsToDefeatBoss: ['сыр', 'фрукты', 'специи'],
+    bossTexture: 'experiment-625',
+  },
+  {
+    theme: 'Недовольство',
+    wordsToReachBoss: ['Обида', 'Порыв', 'Память'],
+    wordsToDefeatBoss: ['Сила', 'Взгляд', 'Скорость '],
+    bossTexture: 'experiment-625',
+  },
+  {
+    theme: 'Инженер',
+    wordsToReachBoss: ['чертёж', 'проект', 'формула'],
+    wordsToDefeatBoss: ['модель', 'система', 'расчет'],
+    bossTexture: 'experiment-010',
+  },
+  {
+    theme: 'Море',
+    wordsToReachBoss: ['шторм', 'волна', 'корабль'],
+    wordsToDefeatBoss: ['медуза', 'якорь', 'дельфин'],
+    bossTexture: 'experiment-020',
+  },
+  {
+    theme: 'Небо',
+    wordsToReachBoss: ['облако', 'солнце', 'звезда'],
+    wordsToDefeatBoss: ['луна', 'туча', 'самолет'],
+    bossTexture: 'experiment-007',
+  },
 ];

@@ -28,7 +28,7 @@ export const GameWrapper: React.FC = () => {
       },
       physics: {
         default: 'arcade',
-        arcade: { debug: true },
+        arcade: { debug: false },
       },
       backgroundColor: '#000000',
     });
