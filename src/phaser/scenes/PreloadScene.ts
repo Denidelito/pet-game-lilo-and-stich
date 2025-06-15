@@ -9,7 +9,7 @@ export class PreloadScene extends Phaser.Scene {
     }
 
     preload(): void {
-        const {width, height} = this.scale;
+        const { width, height } = this.scale;
 
         this.progressBox = this.add.graphics();
         this.progressBox.fillStyle(0x222222, 0.8);
@@ -20,12 +20,7 @@ export class PreloadScene extends Phaser.Scene {
         this.load.on('progress', (value: number) => {
             this.progressBar.clear();
             this.progressBar.fillStyle(0xffffff, 1);
-            this.progressBar.fillRect(
-                width / 2 - 150,
-                height / 2 - 15,
-                300 * value,
-                30,
-            );
+            this.progressBar.fillRect(width / 2 - 150, height / 2 - 15, 300 * value, 30);
         });
 
         this.load.on('complete', () => {
@@ -55,9 +50,8 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('sound-on', 'assets/ui/sound-on.png');
         this.load.image('sound-off', 'assets/ui/sound-off.png');
         this.load.image('player-health', 'assets/ui/player-health.png');
-        this.load.image('information-table', 'assets/ui/information-table.png');
+        this.load.image('boss-bg-ui', 'assets/ui/boss-bg-ui.png');
         this.load.image('tile', 'assets/ui/tile-bg.png');
-        this.load.image('information-table-mobile', 'assets/ui/information-table-mobile.png');
 
         //assets
         this.load.image('player', 'assets/player.png');
