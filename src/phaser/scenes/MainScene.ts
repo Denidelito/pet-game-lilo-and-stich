@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import type { SDK } from 'ysdk';
+import { initYandexSDK } from '../utils/initYSDK.ts';
 import { ParallaxBackground } from '../objects/ParallaxBackground.ts';
 import { Player } from '../objects/Player.ts';
 import { PlayerHealthUI } from '../ui/PlayerHealthUI.ts';
@@ -11,6 +13,8 @@ import { levels } from '../../data/levels.ts';
 import { LevelWordController } from '../logic/LevelWordController.ts';
 import { LevelIntroText } from '../ui/LevelIntroText.ts';
 import { OnboardingOverlay } from '../ui/OnboardingOverlay.ts';
+import { TabFocusController } from '../utils/TabFocusController';
+import { GameOverOverlay } from '../ui/GameOverOverlay.ts';
 
 export class MainScene extends Phaser.Scene {
     private bg!: ParallaxBackground;
@@ -20,23 +24,25 @@ export class MainScene extends Phaser.Scene {
     private bossUI!: BossRevealUI;
     private bossHealthBar!: BossHealthBar;
     private wordController: LevelWordController | null = null;
+    public tabFocusController!: TabFocusController;
 
     private onboardingDone = false;
     public levelIndex = 0;
     public levelTheme = '';
 
+    private ysdk: SDK | null = null;
+
     constructor() {
         super('MainScene');
     }
 
-    create(): void {
-        const mobile = isMobile();
+    async create(): Promise<void> {
+        this.ysdk = await initYandexSDK();
+        this.tabFocusController = new TabFocusController(this);
 
+        const mobile = isMobile();
         const currentLevel = levels[this.levelIndex];
-        const currentWords = [
-            ...currentLevel.wordsToReachBoss,
-            ...currentLevel.wordsToDefeatBoss,
-        ];
+        const currentWords = [...currentLevel.wordsToReachBoss, ...currentLevel.wordsToDefeatBoss];
         this.levelTheme = currentLevel.theme;
 
         // Фон
@@ -54,9 +60,49 @@ export class MainScene extends Phaser.Scene {
             y: this.scale.height - 30,
             texture: 'player',
             stepSoundKey: 'player-move',
+            onDeath: () => {
+                this.wordController?.destroy();
+                this.wordController = null;
+
+                this.physics.world.pause();
+                this.time.paused = true;
+
+                new GameOverOverlay(this, {
+                    message: 'Ты не успел собрать слово и потерял все жизни. Посмотри рекламу и продолжи или начни игру с начала.',
+                    onWatchAd: () => {
+                        this.ysdk?.adv.showRewardedVideo({
+                            callbacks: {
+                                onOpen: () => {
+                                    this.player.heal(this.player.getMaxHealth());
+                                    this.healthUI.update();
+                                },
+                                onClose: () => {
+                                    this.physics.world.resume();
+                                    this.time.paused = false;
+
+                                    const currentLevel = levels[this.levelIndex];
+                                    const currentWords = [
+                                        ...currentLevel.wordsToReachBoss,
+                                        ...currentLevel.wordsToDefeatBoss,
+                                    ];
+
+                                    this.collectedUI.reset();
+                                    this.startLevel(currentWords);
+                                },
+                            },
+                        });
+                    },
+                    onExit: () => {
+                        this.physics.world.resume();
+                        this.time.paused = false;
+                        this.scene.start('MenuScene');
+                    },
+                    scale: mobile ? 0.8 : 1,
+                });
+            },
         });
 
-        // Здоровье
+        // UI
         this.healthUI = new PlayerHealthUI(this, {
             x: mobile ? this.scale.width - 120 : 30,
             y: mobile ? 50 : 88,
@@ -65,7 +111,6 @@ export class MainScene extends Phaser.Scene {
             scale: mobile ? 0.5 : 1,
         });
 
-        // Собранные буквы
         this.collectedUI = new CollectedWordUI(this, {
             x: mobile ? 12 : this.scale.width / 2,
             y: mobile ? 20 : 28,
@@ -73,7 +118,6 @@ export class MainScene extends Phaser.Scene {
             tileTexture: 'tile',
         });
 
-        // UI босса
         this.bossUI = new BossRevealUI(this, {
             x: mobile ? this.scale.width - 69 : this.scale.width - 236 / 2 - 18,
             y: mobile ? 90 : 140,
@@ -82,7 +126,6 @@ export class MainScene extends Phaser.Scene {
             scale: mobile ? 0.5 : 1,
         });
 
-        // Полоска здоровья босса
         this.bossHealthBar = new BossHealthBar(this, {
             x: this.scale.width / 2,
             y: mobile ? this.scale.height - 20 : 140,
