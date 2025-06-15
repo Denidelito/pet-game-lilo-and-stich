@@ -51,6 +51,7 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('sound-off', 'assets/ui/sound-off.png');
         this.load.image('player-health', 'assets/ui/player-health.png');
         this.load.image('boss-bg-ui', 'assets/ui/boss-bg-ui.png');
+        this.load.image('boss-health-bar', 'assets/ui/boss-health-bar.png');
         this.load.image('tile', 'assets/ui/tile-bg.png');
 
         //assets

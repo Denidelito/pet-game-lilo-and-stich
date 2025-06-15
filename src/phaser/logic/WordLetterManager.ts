@@ -1,19 +1,20 @@
 import Phaser from 'phaser';
-import {FallingLetter} from "../objects/FallingLetter.ts";
-import {Player} from "../objects/Player.ts";
-import {isMobile} from "../utils/device.ts";
+import { FallingLetter } from '../objects/FallingLetter.ts';
+import { Player } from '../objects/Player.ts';
+import { isMobile } from '../utils/device.ts';
 
 export class WordLetterManager {
     private readonly scene: Phaser.Scene;
     private readonly targetWord: string;
     private readonly player: Player;
-    public activeLetters: FallingLetter[] = [];
+    private readonly alphabet = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
 
     private readonly columns: number;
     private readonly columnWidth: number;
-    private readonly alphabet = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ';
+    private readonly activeLetters: FallingLetter[] = [];
 
     private currentIndex = 0;
+    private spawner?: Phaser.Time.TimerEvent;
 
     constructor(scene: Phaser.Scene, word: string, player: Player) {
         this.scene = scene;
@@ -24,20 +25,24 @@ export class WordLetterManager {
         this.columns = mobile ? 3 : 12;
         this.columnWidth = scene.scale.width / this.columns;
 
-        this.launchSpawner();
+        this.startSpawner();
     }
 
-    private launchSpawner(): void {
-        this.scene.time.addEvent({
-            delay: 600,
+    private startSpawner(): void {
+        const mobile = isMobile();
+
+        this.spawner = this.scene.time.addEvent({
+            delay: mobile ? 1000 : 600,
             loop: true,
             callback: () => this.spawnLetter(),
         });
     }
 
     private spawnLetter(): void {
-        const correctChar = this.targetWord[this.currentIndex];
 
+        if (this.currentIndex >= this.targetWord.length) return;
+
+        const correctChar = this.targetWord[this.currentIndex];
         const isCorrect = Phaser.Math.Between(1, 10) === 1;
 
         const incorrectPool = this.alphabet
@@ -91,17 +96,20 @@ export class WordLetterManager {
             }
         });
 
-        this.activeLetters = this.activeLetters.filter(l => l.sprite.active);
+        this.activeLetters.splice(
+            0,
+            this.activeLetters.length,
+            ...this.activeLetters.filter(l => l.sprite.active)
+        );
     }
-
 
     public isComplete(): boolean {
         return this.currentIndex >= this.targetWord.length;
     }
 
     public destroy(): void {
+        this.spawner?.remove(false);
         this.activeLetters.forEach(letter => letter.destroy());
         this.activeLetters.length = 0;
     }
 }
-
