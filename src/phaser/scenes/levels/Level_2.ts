@@ -1,22 +1,21 @@
 import Phaser from 'phaser';
 import type { SDK } from 'ysdk';
-import { initYandexSDK } from '../utils/initYSDK.ts';
-import { ParallaxBackground } from '../objects/ParallaxBackground.ts';
-import { Player } from '../objects/Player.ts';
-import { PlayerHealthUI } from '../ui/PlayerHealthUI.ts';
-import { isMobile } from '../utils/device.ts';
-import { CollectedWordUI } from '../ui/CollectedWordUI.ts';
-import { BossRevealUI } from '../ui/BossRevealUIConfig.ts';
-import { BossHealthBar } from '../ui/BossHealthBar.ts';
-import { setupSwipeControls } from '../utils/swipe.ts';
-import { levels } from '../../data/levels.ts';
-import { LevelWordController } from '../logic/LevelWordController.ts';
-import { LevelIntroText } from '../ui/LevelIntroText.ts';
-import { OnboardingOverlay } from '../ui/OnboardingOverlay.ts';
-import { TabFocusController } from '../utils/TabFocusController';
-import { GameOverOverlay } from '../ui/GameOverOverlay.ts';
+import { initYandexSDK } from '../../utils/initYSDK.ts';
+import { ParallaxBackground } from '../../objects/ParallaxBackground.ts';
+import { Player } from '../../objects/Player.ts';
+import { PlayerHealthUI } from '../../ui/PlayerHealthUI.ts';
+import { isMobile } from '../../utils/device.ts';
+import { CollectedWordUI } from '../../ui/CollectedWordUI.ts';
+import { BossRevealUI } from '../../ui/BossRevealUIConfig.ts';
+import { BossHealthBar } from '../../ui/BossHealthBar.ts';
+import { setupSwipeControls } from '../../utils/swipe.ts';
+import { levels } from '../../../data/levels.ts';
+import { LevelWordController } from '../../logic/LevelWordController.ts';
+import { LevelIntroText } from '../../ui/LevelIntroText.ts';
+import { TabFocusController } from '../../utils/TabFocusController';
+import { GameOverOverlay } from '../../ui/GameOverOverlay.ts';
 
-export class MainScene extends Phaser.Scene {
+export class Level_2 extends Phaser.Scene {
     private bg!: ParallaxBackground;
     private player!: Player;
     private healthUI!: PlayerHealthUI;
@@ -27,13 +26,13 @@ export class MainScene extends Phaser.Scene {
     public tabFocusController!: TabFocusController;
 
     private onboardingDone = false;
-    public levelIndex = 0;
+    public levelIndex = 1;
     public levelTheme = '';
 
     private ysdk: SDK | null = null;
 
     constructor() {
-        super('MainScene');
+        super('Level_2');
     }
 
     async create(): Promise<void> {
@@ -138,20 +137,7 @@ export class MainScene extends Phaser.Scene {
         });
         this.bossHealthBar.setVisible(false);
 
-        // Обучение
-        new OnboardingOverlay(this, {
-            steps: [
-                'Смотри на тему уровня, лови буквы и собирай из них слова. Если ты поймаешь букву, которая не подходит для слова, ты лишишься части здоровья.',
-                'После сбора трёх слов ты столкнешься с боссом уровня. Чтобы победить его, нужно снизить его шкалу здоровья до нуля.',
-                'Для перемещения используй клавиши ←/→ или A/D.',
-            ],
-            buttonText: 'Продолжить',
-            scale: mobile ? 0.8 : 1,
-            onComplete: () => {
-                this.onboardingDone = true;
-                this.startLevel(currentWords);
-            },
-        });
+        this.startLevel(currentWords);
 
         // Управление
         if (mobile) {

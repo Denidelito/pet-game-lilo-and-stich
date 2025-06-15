@@ -16,6 +16,7 @@ export interface PlayButtonConfig {
 export class PlayButtonUI {
     public scene: Phaser.Scene;
     private readonly container: Phaser.GameObjects.Container;
+    private clicked = false;
 
     constructor(scene: Phaser.Scene, config: PlayButtonConfig) {
         this.scene = scene;
@@ -54,9 +55,13 @@ export class PlayButtonUI {
         this.container.setInteractive({ useHandCursor: true });
 
         this.container.on('pointerdown', () => {
+            if (this.clicked) return;
+            this.clicked = true;
+
             if (clickSoundKey) {
                 scene.sound.play(clickSoundKey, { volume: 1 });
             }
+
             onClick?.();
             transitionToScene(scene, targetScene);
         });

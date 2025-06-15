@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Phaser from 'phaser';
-import { MainScene, MenuScene, PreloadScene } from '../../../phaser/scenes';
+import { Level_1, Level_2, MenuScene, PreloadScene } from '../../../phaser/scenes';
 
 export const GameWrapper: React.FC = () => {
   const gameRef = useRef<HTMLDivElement>(null);
@@ -16,7 +16,7 @@ export const GameWrapper: React.FC = () => {
       width,
       height,
       parent: gameRef.current,
-      scene: [PreloadScene, MenuScene, MainScene],
+      scene: [PreloadScene, MenuScene, Level_1, Level_2],
       scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,

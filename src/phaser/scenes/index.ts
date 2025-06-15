@@ -1,5 +1,6 @@
-import { MainScene } from './MainScene.ts';
 import { PreloadScene } from './PreloadScene.ts';
 import { MenuScene } from './MenuScene.ts';
+import { Level_1 } from './levels/Level_1.ts';
+import { Level_2 } from './levels/Level_2.ts';
 
-export { MainScene, PreloadScene, MenuScene };
+export { Level_2, Level_1, PreloadScene, MenuScene };

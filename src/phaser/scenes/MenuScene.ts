@@ -28,7 +28,7 @@ export class MenuScene extends Phaser.Scene {
             x: width / 2,
             y: height / 2,
             texture: 'button-play',
-            targetScene: 'MainScene',
+            targetScene: 'Level_2',
             clickSoundKey: 'button-click',
             scale: mobile ? 0.9 : 1,
         });
